@@ -34,7 +34,7 @@ local attach_to_buffer = function(bufnr, command)
         tests = {},
       }
 
-      vim.fn.jobstart(command, {
+      vim.fn.jobstart(vim.fn.split(command, " "), {
         stdout_buffered = true,
         on_stdout = function(_, data)
           if not data then
