@@ -1,5 +1,3 @@
-print("plugin required")
-
 -- Thanks TJ!
 function P(t)
   print(vim.inspect(t))
