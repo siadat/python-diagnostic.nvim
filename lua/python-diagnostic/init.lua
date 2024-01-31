@@ -58,7 +58,8 @@ local attach_to_buffer = function(bufnr, command)
                   output = {},
                   success = false,
                 }
-                state.tests[test_name] = test
+                local key = file .. ":" .. errline .. ":" .. test_name
+                state.tests[key] = test
               end
             end
           end
