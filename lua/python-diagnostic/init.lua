@@ -93,7 +93,7 @@ local M = {}
 
 M.setup = function(opts)
   vim.api.nvim_create_user_command("PythonTestOnSave", function()
-    attach_to_buffer(vim.api.nvim_get_current_buf(), { "poetry", "run", "pytest", "--tb", "native" })
+    attach_to_buffer(vim.api.nvim_get_current_buf(), opts.command)
   end, {})
 end
 
