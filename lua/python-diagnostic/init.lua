@@ -43,15 +43,20 @@ local attach_to_buffer = function(bufnr, command)
 
           for _, line in ipairs(data) do
             -- Check if line matches lines like this: File "/home/sina/src/pcass/tests/test_main.py", line 52, in test_encode_and_decode
-            print("LINE", line)
-            if string.match(line, "File \".+\", line %d+, in .+") then
-              local file, errline, test_name = string.match(line, "File \"(.+)\", line (%d+), in (.+)")
+            local file, errline, test_name = nil, nil, nil
+
+            if string.match(line, "File \"(.+)\", line (%d+), in (.+)") then
+              file, errline, test_name = string.match(line, "File \"(.+)\", line (%d+), in (.+)")
+            elseif string.match(line, "^(.+):(%d+): in (.+)") then
+              file, errline, test_name = string.match(line, "^(.+):(%d+): in (.+)")
+            end
+
+            if file then
               -- convert errline to number:
               errline = tonumber(errline)-1
 
               -- check if file is in the current directory:
-              if string.match(file, vim.fn.getcwd()) then
-                print("YES", file, errline, test_name)
+              if string.match(file, vim.fn.getcwd()) or not string.match(file, "^/") then
                 local test = {
                   file = file,
                   line = errline,
@@ -71,15 +76,17 @@ local attach_to_buffer = function(bufnr, command)
           for _, test in pairs(state.tests) do
             if test.line then
               if not test.success then
-                table.insert(failed, {
-                  bufnr = bufnr,
-                  lnum = test.line,
-                  col = 0,
-                  severity = vim.diagnostic.severity.ERROR,
-                  source = "python-test-source",
-                  message = "Test Failed",
-                  user_data = {},
-                })
+                if test.file == vim.fn.bufname(bufnr) then
+                  table.insert(failed, {
+                    bufnr = bufnr,
+                    lnum = test.line,
+                    col = 0,
+                    severity = vim.diagnostic.severity.ERROR,
+                    source = "python-test-source",
+                    message = "Test Failed",
+                    user_data = {},
+                  })
+                end
               end
             end
           end
