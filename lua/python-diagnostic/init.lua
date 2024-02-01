@@ -43,6 +43,7 @@ local attach_to_buffer = function(bufnr, command)
 
           for _, line in ipairs(data) do
             -- Check if line matches lines like this: File "/home/sina/src/pcass/tests/test_main.py", line 52, in test_encode_and_decode
+            print("LINE", line)
             if string.match(line, "File \".+\", line %d+, in .+") then
               local file, errline, test_name = string.match(line, "File \"(.+)\", line (%d+), in (.+)")
               -- convert errline to number:
